@@ -10,13 +10,18 @@ public:
     bool isInputValid();
 
 private:
+    bool parseArray();
+    
     bool parseObject();
     bool parseString();
     bool parseValue();
-    bool parseNumber();
-    
-    void skipWhitespace();
 
+    bool parseTrue();
+    bool parseFalse();
+    bool parseNull();
+    bool parseNumber();
+
+    void skipWhitespace();
     char getCurrentChar();
 
     std::string mInputText;
