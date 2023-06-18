@@ -10,7 +10,7 @@ bool JSONParser::isInputValid() {
     mCurrentIndex = 0;
 
     skipWhitespace();
-    if(getCurrentChar() != '{' && getCurrentChar() != '[')
+    if (getCurrentChar() != '{' && getCurrentChar() != '[')
         return false;
 
     switch (getCurrentChar()) {
@@ -39,9 +39,9 @@ bool JSONParser::parseArray() {
             return false;
 
         skipWhitespace();
-        if (getCurrentChar() == ',') {
+        if (getCurrentChar() == ',')
             ++mCurrentIndex;
-        }
+
         else if (getCurrentChar() != ']') 
             return false;
     }
@@ -69,9 +69,9 @@ bool JSONParser::parseObject() {
             return false;
 
         skipWhitespace();
-        if (getCurrentChar() == ',') {
+        if (getCurrentChar() == ',')
             ++mCurrentIndex;
-        }
+
         else if (getCurrentChar() != '}') 
             return false;
     }
@@ -86,9 +86,47 @@ bool JSONParser::parseString() {
 
     ++mCurrentIndex;
     while (getCurrentChar() != '\"') {
-        ++mCurrentIndex;
-        if (mCurrentIndex >= mInputText.size())
-            return false;
+        if (getCurrentChar() == '\\') {
+            ++mCurrentIndex;
+            if (mCurrentIndex >= mInputText.size())
+                return false;
+            
+            switch (getCurrentChar()) {
+                case '\"':
+                case '\\':
+                case '/':
+                case 'b':
+                case 'f':
+                case 'n':
+                case 'r':
+                case 't':
+                    ++mCurrentIndex;
+                break;
+                case 'u':
+                {
+                    ++mCurrentIndex;
+                    if (mCurrentIndex + 4 >= mInputText.size()) {
+                        return false;
+                    }
+                    std::string fourHexDigits = mInputText.substr(mCurrentIndex, 4);
+                    for (char character : fourHexDigits) {
+                        if (!std::isxdigit(character))
+                            return false;
+                    }
+
+                    mCurrentIndex += 4;
+                break;
+                }
+                default:
+                    return false;
+                break;
+            }
+        }
+        else {
+            ++mCurrentIndex;
+            if (mCurrentIndex >= mInputText.size())
+                return false;
+        }
     }
 
     ++mCurrentIndex;
@@ -125,21 +163,21 @@ bool JSONParser::parseValue() {
 
 
 bool JSONParser::parseTrue() {
-    if( mInputText.substr(mCurrentIndex, 4) == "true") {
+    if (mInputText.substr(mCurrentIndex, 4) == "true") {
         mCurrentIndex += 4;
         return true;
     }
     return false;
 }
 bool JSONParser::parseFalse() {
-    if( mInputText.substr(mCurrentIndex, 4) == "false") {
-        mCurrentIndex += 4;
+    if (mInputText.substr(mCurrentIndex, 5) == "false") {
+        mCurrentIndex += 5;
         return true;
     }
     return false;
 }
 bool JSONParser::parseNull() {
-    if( mInputText.substr(mCurrentIndex, 4) == "null") {
+    if (mInputText.substr(mCurrentIndex, 4) == "null") {
         mCurrentIndex += 4;
         return true;
     }
@@ -148,7 +186,7 @@ bool JSONParser::parseNull() {
 
 
 bool JSONParser::parseNumber() {
-    if(!std::isdigit(getCurrentChar())) {
+    if (!std::isdigit(getCurrentChar())) {
         return false;
     }
 

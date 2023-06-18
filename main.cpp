@@ -21,10 +21,10 @@ int main() {
     JSONParser myParser = JSONParser(inputText);
 
     if (myParser.isInputValid()) {
-        std::cout << "The input is in valid json format";
+        std::cout << "The input is in valid json format" << std::endl;
     }
     else {
-        std::cout << "The input format is invalid";
+        std::cout << "The input format is invalid" << std::endl;
     }
 
     return 0;
