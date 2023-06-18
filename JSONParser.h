@@ -10,11 +10,14 @@ public:
     bool isInputValid();
 
 private:
+    bool parseObject();
+    bool parseString();
+    bool parseValue();
+    bool parseNumber();
+    
     void skipWhitespace();
 
-
-
-
+    char getCurrentChar();
 
     std::string mInputText;
     int mCurrentIndex;
